@@ -1,0 +1,38 @@
+# Frontend
+
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# Backend
+
+backend/build/
+backend/.gradle/
+
+# Backend configuration with passwords
+
+backend/src/main/resources/application.properties
+
+# Environment files
+
+.env
+.env.*
+
+# IDE
+
+.vscode/
+.idea/
+
+# Java
+
+*.class
+
+# OS
+
+.DS_Store
+Thumbs.db
+
+# Secrets
+
+application-local.properties
