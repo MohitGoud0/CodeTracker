@@ -47,38 +47,42 @@ function Login() {
   };
 
   return (
-    <div>
+    <div className="auth-container">
 
-      <h1>CodeTracker Login</h1>
+      <div className="auth-card">
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <h1>CodeTracker</h1>
 
-      <br /><br />
+        <p>
+          Login to continue tracking your coding progress.
+        </p>
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <br /><br />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      <button onClick={login}>
-        Login
-      </button>
+        <button onClick={login}>
+          Login
+        </button>
 
-      <p>
-        Don't have an account?{" "}
-        <Link to="/signup">
-          Sign Up
-        </Link>
-      </p>
+        <p className="auth-link">
+          Don't have an account?{" "}
+          <Link to="/signup">
+            Sign Up
+          </Link>
+        </p>
+
+      </div>
 
     </div>
   );
