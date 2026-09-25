@@ -2,11 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.model.Problem;
 import com.example.demo.repository.ProblemRepository;
-import com.openai.client.OpenAIClient;
-import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatModel;
-import com.openai.models.responses.Response;
-import com.openai.models.responses.ResponseCreateParams;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,12 +11,7 @@ public class AIRecommendationService {
 
     private final ProblemRepository problemRepository;
 
-    private final OpenAIClient client =
-            OpenAIOkHttpClient.fromEnv();
-
-    public AIRecommendationService(
-            ProblemRepository problemRepository) {
-
+    public AIRecommendationService(ProblemRepository problemRepository) {
         this.problemRepository = problemRepository;
     }
 
@@ -31,14 +21,17 @@ public class AIRecommendationService {
                 problemRepository.findByUserId(userId);
 
         if (problems.isEmpty()) {
-            return "Start solving Easy problems in Arrays and Strings to build a strong foundation.";
+            return "Start with Easy problems in Arrays and Strings to build a strong DSA foundation.";
         }
 
         int easy = 0;
         int medium = 0;
         int hard = 0;
 
-        StringBuilder topics = new StringBuilder();
+        int arrays = 0;
+        int strings = 0;
+        int linkedLists = 0;
+        int trees = 0;
 
         for (Problem problem : problems) {
 
@@ -59,39 +52,49 @@ public class AIRecommendationService {
             }
 
             if (problem.getTopic() != null) {
-                topics.append(problem.getTopic()).append(", ");
+
+                if ("Arrays".equalsIgnoreCase(problem.getTopic())) {
+                    arrays++;
+                }
+
+                if ("Strings".equalsIgnoreCase(problem.getTopic())) {
+                    strings++;
+                }
+
+                if ("Linked List".equalsIgnoreCase(problem.getTopic())) {
+                    linkedLists++;
+                }
+
+                if ("Trees".equalsIgnoreCase(problem.getTopic())) {
+                    trees++;
+                }
             }
         }
 
-        String prompt =
-                "You are an AI coding mentor for a student. " +
-                "Analyze the student's coding progress and give one short, practical recommendation. " +
-                "Do not give generic motivation. " +
-                "Mention what difficulty or DSA area the student should focus on next. " +
-                "Keep the answer within 2 sentences.\n\n" +
+        if (easy > medium + hard) {
+            return "You have solved more Easy problems, so start focusing on Medium problems to improve your problem-solving skills.";
+        }
 
-                "Student coding data:\n" +
-                "Easy solved: " + easy + "\n" +
-                "Medium solved: " + medium + "\n" +
-                "Hard solved: " + hard + "\n" +
-                "Topics practiced: " + topics + "\n";
+        if (arrays > strings && arrays > linkedLists && arrays > trees) {
+            return "You practice Arrays frequently. Next, focus on Strings and Linked Lists to improve your DSA coverage.";
+        }
 
-        ResponseCreateParams params =
-                ResponseCreateParams.builder()
-                        .input(prompt)
-                        .model(ChatModel.GPT_5_2)
-                        .build();
+        if (strings > arrays && strings > linkedLists && strings > trees) {
+            return "You practice Strings frequently. Try more Medium Array and Linked List problems next.";
+        }
 
-        Response response =
-                client.responses().create(params);
+        if (linkedLists > arrays && linkedLists > strings && linkedLists > trees) {
+            return "You practice Linked Lists frequently. Start solving more Trees and Graph problems next.";
+        }
 
-        return response.output()
-                .stream()
-                .flatMap(item -> item.message().stream())
-                .flatMap(message -> message.content().stream())
-                .flatMap(content -> content.outputText().stream())
-                .map(outputText -> outputText.text())
-                .findFirst()
-                .orElse("Keep practicing consistently and focus on your weaker DSA topics.");
+        if (trees > arrays && trees > strings && trees > linkedLists) {
+            return "You are practicing Trees well. Try more Graph and Dynamic Programming problems next.";
+        }
+
+        if (hard > 0) {
+            return "You have started solving Hard problems. Continue with Medium problems in weaker DSA topics before increasing Hard problem practice.";
+        }
+
+        return "Keep solving Medium problems and gradually increase your practice across different DSA topics.";
     }
 }
